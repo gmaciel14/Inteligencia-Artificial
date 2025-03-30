@@ -1,0 +1,69 @@
+# Predição de Desempenho Escolar com Scikit-Learn
+# Autor: Gabriel Maciel Figueiredo Constantino da Silva
+# E-mail: gabriel.maciel.2002@gmail.com
+# RA: 10419291
+# Última atualização: 30/03/2025
+
+# Importação de bibliotecas
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
+# Leitura da base de dados
+df = pd.read_csv("student-mat.csv", sep=';')
+
+# Criação da variável alvo binária
+df['pass'] = df['G3'].apply(lambda x: 1 if x >= 10 else 0)
+
+# Exibição das primeiras linhas
+df.head()
+
+# Análise da distribuição de aprovação
+sns.countplot(x='pass', data=df)
+plt.title('Distribuição de Aprovação (1 = Aprovado, 0 = Reprovado)')
+plt.show()
+
+# Correlação entre variáveis numéricas
+plt.figure(figsize=(12, 8))
+sns.heatmap(df.corr(numeric_only=True), annot=True, cmap='coolwarm')
+plt.title("Mapa de Correlação entre Variáveis Numéricas")
+plt.show()
+
+# Seleção de features e variável alvo
+X = df.drop(columns=['G1', 'G2', 'G3', 'pass'])  # G1 e G2 são notas parciais
+y = df['pass']
+
+# Codificação de variáveis categóricas
+for col in X.select_dtypes(include='object').columns:
+    le = LabelEncoder()
+    X[col] = le.fit_transform(X[col])
+
+# Divisão dos dados
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Treinamento do modelo
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+
+# Predições e avaliação
+y_pred = model.predict(X_test)
+
+print("Matriz de Confusão:")
+print(confusion_matrix(y_test, y_pred))
+
+print("\nRelatório de Classificação:")
+print(classification_report(y_test, y_pred))
+
+print("Acurácia:", accuracy_score(y_test, y_pred))
+
+# Importância das variáveis
+importances = pd.Series(model.feature_importances_, index=X.columns)
+importances.sort_values(ascending=False).plot(kind='bar', figsize=(12,6))
+plt.title("Importância das Variáveis para o Modelo")
+plt.ylabel("Score")
+plt.tight_layout()
+plt.show()
