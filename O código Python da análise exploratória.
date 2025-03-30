@@ -1,10 +1,29 @@
-# Predição de Desempenho Escolar com Scikit-Learn
-# Autor: Gabriel Maciel Figueiredo Constantino da Silva
-# E-mail: gabriel.maciel.2002@gmail.com
-# RA: 10419291
-# Última atualização: 30/03/2025
+"""
+Arquivo: analise_exploratoria_modelo.py
 
-# Importação de bibliotecas
+Autor:
+    Nome: Gabriel Maciel Figueiredo Constantino da Silva
+    E-mail: 10419291@mackenzista.com
+    RA: 10419291
+
+Síntese:
+    Este script realiza a análise exploratória e modelagem preditiva com base
+    no dataset 'student-mat.csv', utilizando algoritmos de classificação supervisionada.
+    As etapas incluem:
+    - Leitura do dataset e criação da variável alvo binária
+    - Análise exploratória visual (distribuição e correlação)
+    - Pré-processamento: codificação de variáveis categóricas
+    - Treinamento e avaliação de um modelo Random Forest
+    - Visualização da importância das variáveis no modelo
+
+Histórico de Atualizações:
+    - 30/03/2025 | Gabriel Maciel Figueiredo Constantino da Silva | Criação do script com análise exploratória e modelo
+    - 31/03/2025 | Gabriel Maciel Figueiredo Constantino da Silva | Inclusão de gráficos, métricas e cabeçalho completo
+
+Versão: 1.0
+"""
+
+# Importações
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -13,16 +32,17 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
-# Leitura da base de dados
+# Carregamento da base de dados
 df = pd.read_csv("student-mat.csv", sep=';')
 
-# Criação da variável alvo binária
+# Criação da variável alvo binária: aprovado (1) ou reprovado (0)
 df['pass'] = df['G3'].apply(lambda x: 1 if x >= 10 else 0)
 
-# Exibição das primeiras linhas
-df.head()
+# Exibição inicial
+print("Visualização inicial dos dados:")
+print(df.head())
 
-# Análise da distribuição de aprovação
+# Análise exploratória - distribuição de aprovados/reprovados
 sns.countplot(x='pass', data=df)
 plt.title('Distribuição de Aprovação (1 = Aprovado, 0 = Reprovado)')
 plt.show()
@@ -33,37 +53,37 @@ sns.heatmap(df.corr(numeric_only=True), annot=True, cmap='coolwarm')
 plt.title("Mapa de Correlação entre Variáveis Numéricas")
 plt.show()
 
-# Seleção de features e variável alvo
-X = df.drop(columns=['G1', 'G2', 'G3', 'pass'])  # G1 e G2 são notas parciais
+# Seleção de variáveis
+X = df.drop(columns=['G1', 'G2', 'G3', 'pass'])  # Evita vazamento de informação
 y = df['pass']
 
-# Codificação de variáveis categóricas
+# Codificação das variáveis categóricas
 for col in X.select_dtypes(include='object').columns:
-    le = LabelEncoder()
-    X[col] = le.fit_transform(X[col])
+    X[col] = LabelEncoder().fit_transform(X[col])
 
-# Divisão dos dados
+# Divisão treino/teste
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-# Treinamento do modelo
+# Criação e treinamento do modelo
 model = RandomForestClassifier(random_state=42)
 model.fit(X_train, y_train)
 
-# Predições e avaliação
+# Predições
 y_pred = model.predict(X_test)
 
+# Avaliação
 print("Matriz de Confusão:")
 print(confusion_matrix(y_test, y_pred))
 
 print("\nRelatório de Classificação:")
 print(classification_report(y_test, y_pred))
 
-print("Acurácia:", accuracy_score(y_test, y_pred))
+print("Acurácia geral:", accuracy_score(y_test, y_pred))
 
-# Importância das variáveis
+# Visualização da importância das variáveis
 importances = pd.Series(model.feature_importances_, index=X.columns)
-importances.sort_values(ascending=False).plot(kind='bar', figsize=(12,6))
-plt.title("Importância das Variáveis para o Modelo")
-plt.ylabel("Score")
+importances.sort_values(ascending=True).plot(kind='barh', figsize=(10, 8))
+plt.title("Importância das Variáveis no Modelo Random Forest")
+plt.xlabel("Score")
 plt.tight_layout()
 plt.show()
