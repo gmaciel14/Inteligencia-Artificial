@@ -1,0 +1,27 @@
+## Descrição do Dataset - student-mat.csv
+
+### Fonte: UCI Machine Learning Repository  
+### Link: https://archive.ics.uci.edu/ml/datasets/student+performance  
+
+### Descrição:
+Este dataset contém dados reais de desempenho acadêmico de 395 estudantes do ensino médio em duas escolas públicas de Portugal. A base foi coletada por meio de questionários e registros escolares.
+
+### Características:
+- Total de registros: 395 alunos
+- Total de atributos: 33 colunas
+- Tipo de tarefa: Classificação supervisionada
+
+### Principais variáveis:
+- `sex`, `age`, `studytime`, `failures`, `absences`
+- `G1`, `G2`, `G3`: notas em três períodos escolares
+- `Medu`, `Fedu`: nível de escolaridade dos pais
+- `schoolsup`, `famsup`: apoio educacional
+- `romantic`, `activities`: aspectos comportamentais
+
+### Target utilizado no projeto:
+- A variável `G3` (nota final) foi transformada em uma variável binária `pass`, indicando:
+    - 1 = Aprovado (G3 ≥ 10)
+    - 0 = Reprovado (G3 < 10)
+
+### Utilização:
+Essa base foi usada neste projeto para desenvolver um modelo preditivo de desempenho escolar com algoritmos de classificação utilizando Scikit-Learn.
